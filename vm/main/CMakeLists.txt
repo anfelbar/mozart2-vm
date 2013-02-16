@@ -57,9 +57,6 @@ add_custom_target(gensources
 if(BUILD_CSS)
   add_definitions(-DVM_HAS_CSS=1)
   include_directories(${GECODE_INCLUDES})
-  message("BUILD CSS IS A YES!!")
-else()
-  message("BUILD CSS IS A NO!!")
 endif()
 
 # Build the library
