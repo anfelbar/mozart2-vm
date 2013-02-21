@@ -37,6 +37,35 @@ public:
     raiseTypeError(vm,MOZART_STR("InvalidIntegerConsistencyLevel"),l);
     return Gecode::ICL_DEF;
   }
+
+  static Gecode::IntVarArgs getIntVarArgs(VM vm, In x){
+    size_t width;
+    
+    if(x.is<Tuple>()){
+      width = x.as<Tuple>().getWidth();
+      Gecode::IntVarArgs v(width);
+      std::cout << "Is tuple" << width << std::endl;
+      for(int i=0; i<width; i++){
+      	StableNode* t=x.as<Tuple>().getElement(i);
+	UnstableNode a = Reference::build(vm, t);
+	RichNode tt = a;
+	assert(tt.is<CstIntVar>());
+	v[i] = IntVarLike(tt.as<CstIntVar>()).intVar(vm);
+      }
+      for(int i=0; i<width; i++){
+	std::cout << v[i].min() << std::endl;
+      }
+      return v;
+    }else if(x.is<Cons>()){
+      std::cout << "Args is Cons" << std::endl;
+      Gecode::IntVarArgs v(1);
+      return v;
+    }else {
+      std::cout << "Args is Record" << std::endl;
+      Gecode::IntVarArgs v(1);
+      return v;
+    }
+  }
   
   class Rel: public Builtin<Rel> {
   public:
@@ -50,8 +79,19 @@ public:
     }
   };
 
+  class Distinct: public Builtin<Distinct> {
+  public:
+    Distinct(): Builtin("distinct") {}
+    
+    static void call(VM vm, In x) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::distinct(home,getIntVarArgs(vm,x));
+      //home.status(); //Call status in order to propagate; Debuging porpuses. 
+    }
+  };
 
-}; // class ModProp
+}; // class ModIntVarProp
 } // namespace builtins
 } // namespace mozart
-#endif // __MODPROP_H
+#endif // __MODINTVARPROP_H
