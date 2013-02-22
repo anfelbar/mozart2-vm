@@ -65,6 +65,24 @@ public:
       result = build(vm, IntVarLike(var).isIn(vm,n));
     }
   };
+  class Inf: public Builtin<Inf> {
+  public:
+    Inf(): Builtin("inf") {}
+
+    static void call(VM vm, Out result) {
+      result = build(vm, Gecode::Int::Limits::min);
+    }
+  };
+
+  class Sup: public Builtin<Sup> {
+  public:
+    Sup(): Builtin("sup") {}
+
+    static void call(VM vm, Out result) {
+      result = build(vm, Gecode::Int::Limits::max);
+    }
+  };
+
 };
 } // builtins
 } // mozart
