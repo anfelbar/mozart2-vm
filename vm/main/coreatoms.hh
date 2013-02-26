@@ -86,6 +86,38 @@ void CoreAtoms::initialize(VM vm, AtomTable& atomTable) {
   icl_bnd = atomTable.get(vm, MOZART_STR("ICL_BND"));
   icl_dom = atomTable.get(vm, MOZART_STR("ICL_DOM"));
   icl_def = atomTable.get(vm, MOZART_STR("ICL_DEF"));
+
+  int_var_none = atomTable.get(vm, MOZART_STR("INT_VAR_NONE"));
+  int_var_rnd = atomTable.get(vm, MOZART_STR("INT_VAR_RND"));
+  int_var_degree_min = atomTable.get(vm, MOZART_STR("INT_VAR_DEGREE_MIN"));
+  int_var_degree_max = atomTable.get(vm, MOZART_STR("INT_VAR_DEGREE_MAX"));
+  int_var_afc_min = atomTable.get(vm, MOZART_STR("INT_VAR_AFC_MIN"));
+  int_var_min_min = atomTable.get(vm, MOZART_STR("INT_VAR_MIN_MIN"));
+  int_var_min_max = atomTable.get(vm, MOZART_STR("INT_VAR_MIN_MAX"));
+  int_var_max_min = atomTable.get(vm, MOZART_STR("INT_VAR_MAX_MIN"));
+  int_var_max_max = atomTable.get(vm, MOZART_STR("INT_VAR_MAX_MAX"));
+  int_var_size_min = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_MIN"));
+  int_var_size_max = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_MAX"));
+  int_var_size_degree_min = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_DEGREE_MIN"));
+  int_var_size_degree_max = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_DEGREE_MAX"));
+  int_var_size_afc_min = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_AFC_MIN"));
+  int_var_size_afc_max = atomTable.get(vm, MOZART_STR("INT_VAR_SIZE_AFC_MAX"));
+  int_var_regret_min_min = atomTable.get(vm, MOZART_STR("INT_VAR_REGRET_MIN_MIN"));
+  int_var_regret_min_max = atomTable.get(vm, MOZART_STR("INT_VAR_REGRET_MIN_MAX"));
+  int_var_regret_max_min = atomTable.get(vm, MOZART_STR("INT_VAR_REGRET_MAX_MIN"));
+  int_var_regret_max_max = atomTable.get(vm, MOZART_STR("INT_VAR_REGRET_MAX_MAX"));
+
+  int_val_min = atomTable.get(vm, MOZART_STR("INT_VAL_MIN"));
+  int_val_med = atomTable.get(vm, MOZART_STR("INT_VAL_MED"));
+  int_val_max = atomTable.get(vm, MOZART_STR("INT_VAL_MAX"));
+  int_val_rad = atomTable.get(vm, MOZART_STR("INT_VAL_RND"));
+  int_val_split_min = atomTable.get(vm, MOZART_STR("INT_VAL_SPLIT_MIN"));
+  int_val_split_max = atomTable.get(vm, MOZART_STR("INT_VAL_SPLIT_MAX"));
+  int_val_range_min = atomTable.get(vm, MOZART_STR("INT_VAL_RANGE_MIN"));
+  int_val_range_max = atomTable.get(vm, MOZART_STR("INT_VAL_RANGE_MAX"));
+  int_values_min = atomTable.get(vm, MOZART_STR("INT_VALUES_MIN"));
+  int_values_max = atomTable.get(vm, MOZART_STR("INT_VALUES_MAX"));
+  
 }
 
 }

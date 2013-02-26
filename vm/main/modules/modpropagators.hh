@@ -37,6 +37,47 @@ public:
     raiseTypeError(vm,MOZART_STR("InvalidIntegerConsistencyLevel"),l);
     return Gecode::ICL_DEF;
   }
+  
+  static Gecode::IntVarBranch atomToIntVarBranch(VM vm, In bvar){
+    atom_t a = getArgument<atom_t>(vm,bvar,MOZART_STR("Atom"));
+    if (a == vm->coreatoms.int_var_none) return Gecode::INT_VAR_NONE;
+    if (a == vm->coreatoms.int_var_rnd) return Gecode::INT_VAR_RND;
+    if (a == vm->coreatoms.int_var_degree_min) return Gecode::INT_VAR_DEGREE_MIN;
+    if (a == vm->coreatoms.int_var_degree_max) return Gecode::INT_VAR_DEGREE_MAX;
+    if (a == vm->coreatoms.int_var_afc_min) return Gecode::INT_VAR_AFC_MIN;
+    if (a == vm->coreatoms.int_var_min_min) return Gecode::INT_VAR_MIN_MIN;
+    if (a == vm->coreatoms.int_var_min_max) return Gecode::INT_VAR_MIN_MAX;
+    if (a == vm->coreatoms.int_var_max_min) return Gecode::INT_VAR_MAX_MIN;
+    if (a == vm->coreatoms.int_var_max_max) return Gecode::INT_VAR_MAX_MAX;
+    if (a == vm->coreatoms.int_var_size_min) return Gecode::INT_VAR_SIZE_MIN;
+    if (a == vm->coreatoms.int_var_size_max) return Gecode::INT_VAR_SIZE_MAX;
+    if (a == vm->coreatoms.int_var_size_degree_min) return Gecode::INT_VAR_SIZE_DEGREE_MIN;
+    if (a == vm->coreatoms.int_var_size_degree_max) return Gecode::INT_VAR_SIZE_DEGREE_MAX;
+    if (a == vm->coreatoms.int_var_size_afc_min) return Gecode::INT_VAR_SIZE_AFC_MIN;
+    if (a == vm->coreatoms.int_var_size_afc_max) return Gecode::INT_VAR_SIZE_AFC_MAX;
+    if (a == vm->coreatoms.int_var_regret_min_min) return Gecode::INT_VAR_REGRET_MIN_MIN;
+    if (a == vm->coreatoms.int_var_regret_min_max) return Gecode::INT_VAR_REGRET_MIN_MAX;
+    if (a == vm->coreatoms.int_var_regret_max_min) return Gecode::INT_VAR_REGRET_MAX_MIN;
+    if (a == vm->coreatoms.int_var_regret_max_max) return Gecode::INT_VAR_REGRET_MAX_MAX;
+    raiseTypeError(vm,MOZART_STR("InvalidIntegerBranchType"),bvar);
+    return Gecode::INT_VAR_NONE;
+  }
+
+  static Gecode::IntValBranch atomToIntValBranch(VM vm, In bval){
+    atom_t a = getArgument<atom_t>(vm,bval,MOZART_STR("Atom"));  
+    if (a == vm->coreatoms.int_val_min) return Gecode::INT_VAL_MIN;
+    if (a == vm->coreatoms.int_val_med) return Gecode::INT_VAL_MED;
+    if (a == vm->coreatoms.int_val_max) return Gecode::INT_VAL_MAX;
+    if (a == vm->coreatoms.int_val_rad) return Gecode::INT_VAL_RND;
+    if (a == vm->coreatoms.int_val_split_min) return Gecode::INT_VAL_SPLIT_MIN;
+    if (a == vm->coreatoms.int_val_split_max) return Gecode::INT_VAL_SPLIT_MAX;
+    if (a == vm->coreatoms.int_val_range_min) return Gecode::INT_VAL_RANGE_MIN;
+    if (a == vm->coreatoms.int_val_range_max) return Gecode::INT_VAL_RANGE_MAX;
+    if (a == vm->coreatoms.int_values_min) return Gecode::INT_VALUES_MIN;
+    if (a == vm->coreatoms.int_values_max) return Gecode::INT_VALUES_MAX;
+    raiseTypeError(vm,MOZART_STR("InvalidIntegerBranchType"),bval);
+    return Gecode::INT_VAL_MIN;
+  }
 
   static Gecode::IntVarArgs getIntVarArgs(VM vm, In x){
     size_t width;
@@ -44,16 +85,13 @@ public:
     if(x.is<Tuple>()){
       width = x.as<Tuple>().getWidth();
       Gecode::IntVarArgs v(width);
-      std::cout << "Is tuple" << width << std::endl;
+      //std::cout << "Is tuple" << width << std::endl;
       for(int i=0; i<width; i++){
       	StableNode* t=x.as<Tuple>().getElement(i);
 	UnstableNode a = Reference::build(vm, t);
 	RichNode tt = a;
 	assert(tt.is<CstIntVar>());
 	v[i] = IntVarLike(tt.as<CstIntVar>()).intVar(vm);
-      }
-      for(int i=0; i<width; i++){
-	std::cout << v[i].min() << std::endl;
       }
       return v;
     }else if(x.is<Cons>()){
@@ -88,6 +126,18 @@ public:
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
       Gecode::distinct(home,getIntVarArgs(vm,x));
       //home.status(); //Call status in order to propagate; Debuging porpuses. 
+    }
+  };
+
+  class Branch: public Builtin<Branch> {
+  public:
+    Branch(): Builtin("branch") {}
+    static void call(VM vm, In x, In bvar, In bval) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::IntVarBranch bvart = atomToIntVarBranch(vm,bvar); 
+      Gecode::IntValBranch bvalt = atomToIntValBranch(vm,bval);
+      Gecode::branch(home,getIntVarArgs(vm,x),bvart,bvalt); 
     }
   };
 

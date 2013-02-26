@@ -102,6 +102,40 @@ struct CoreAtoms {
   atom_t icl_dom;
   atom_t icl_def;
 
+  // Integer IntVarBranch types
+  atom_t int_var_none;
+  atom_t int_var_rnd;
+  atom_t int_var_degree_min;
+  atom_t int_var_degree_max;
+  atom_t int_var_afc_min;
+  atom_t int_var_min_min;
+  atom_t int_var_min_max;
+  atom_t int_var_max_min;
+  atom_t int_var_max_max;
+  atom_t int_var_size_min;
+  atom_t int_var_size_max;
+  atom_t int_var_size_degree_min;
+  atom_t int_var_size_degree_max;
+  atom_t int_var_size_afc_min;
+  atom_t int_var_size_afc_max;
+  atom_t int_var_regret_min_min;
+  atom_t int_var_regret_min_max;
+  atom_t int_var_regret_max_min;
+  atom_t int_var_regret_max_max;
+  
+  // Integer IntValBranch types
+  atom_t int_val_min;
+  atom_t int_val_med;
+  atom_t int_val_max;
+  atom_t int_val_rad;
+  atom_t int_val_split_min;
+  atom_t int_val_split_max;
+  atom_t int_val_range_min;
+  atom_t int_val_range_max;
+  atom_t int_values_min;
+  atom_t int_values_max;
+  
+
 };
 
 }
