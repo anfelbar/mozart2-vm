@@ -48,11 +48,11 @@ endif()
 
 link_directories(${GECODE_INSTALL_DIR}/lib)
 set(GECODE_LIBRARIES 
-  gecodekernel
-  gecodesupport
-  gecodeint
+  gecodesearch
   gecodeset
-  gecodesearch 
+  gecodeint
+  gecodekernel
+  gecodesupport   
 )
 set(GECODE_INCLUDES ${GECODE_INSTALL_DIR}/include)
 

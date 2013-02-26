@@ -22,8 +22,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef __MODINT_H
-#define __MODINT_H
+#ifndef __MODINTVAR_H
+#define __MODINTVAR_H
 
 #include "../mozartcore.hh"
 
@@ -45,7 +45,7 @@ public:
   public:
     New(): Builtin("new") {}
 
-    void operator()(VM vm, In min, In max, Out result) {
+    static void call(VM vm, In min, In max, Out result) {
       result = CstIntVar::build(vm,min,max);
     }
   };
@@ -54,7 +54,7 @@ public:
   public:
     Is(): Builtin("is") {}
 
-    void operator()(VM vm, In var, Out result) {
+    static void call(VM vm, In var, Out result) {
       result = build(vm, IntVarLike(var).isIntVarLike(vm));
     }
   };
@@ -63,7 +63,7 @@ public:
   public:
     Min(): Builtin("min") {}
 
-    void operator()(VM vm, In var, Out result) {
+    static void call(VM vm, In var, Out result) {
       result = build(vm, IntVarLike(var).min(vm));
     }
   };
@@ -72,7 +72,7 @@ public:
   public:
     Max(): Builtin("max") {}
 
-    void operator()(VM vm, In var, Out result) {
+    static void call(VM vm, In var, Out result) {
       result = build(vm, IntVarLike(var).max(vm));
     }
   };
@@ -81,7 +81,7 @@ public:
   public:
     Value(): Builtin("value") {}
 
-    void operator()(VM vm, In var, Out result) {
+    static void call(VM vm, In var, Out result) {
       result = build(vm, IntVarLike(var).value(vm));
     }
   };
@@ -90,14 +90,14 @@ public:
   public:
     IsIn(): Builtin("isIn") {}
 
-    void operator()(VM vm, In var, In n, Out result) {
+    static void call(VM vm, In var, In n, Out result) {
       result = build(vm, IntVarLike(var).isIn(vm,n));
     }
-  }
+  };
 };
 }
 }
 
 #endif // MOZART_GENERATOR
 
-#endif // __MODINT_H
+#endif // __MODINTVAR_H

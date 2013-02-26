@@ -63,5 +63,6 @@
 #include "modules/modvirtualstring.hh"
 #include "modules/modintvar.hh"
 #include "modules/modfdb.hh"
+#include "modules/modsearch.hh"
 
 #endif // __COREMODULES_H
