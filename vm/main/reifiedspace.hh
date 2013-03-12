@@ -121,7 +121,7 @@ void ReifiedSpace::create(SpaceRef& self, VM vm, GR gr, ReifiedSpace from) {
 }
 
 UnstableNode ReifiedSpace::askSpace(RichNode self, VM vm) {
-  using namespace patternmatching;
+	using namespace patternmatching;
 
   Space* space = getSpace();
 
@@ -130,7 +130,9 @@ UnstableNode ReifiedSpace::askSpace(RichNode self, VM vm) {
 
   RichNode statusVar = *space->getStatusVar();
 
+  std::cout << "Incio matchesTuple File: reifiedSpace.hh Line: 134" << std::endl;
   if (matchesTuple(vm, statusVar, vm->coreatoms.succeeded, wildcard())) {
+    std::cout << "Fin matchesTuple File: reifiedSpace.hh Line: 134" << std::endl;
     return Atom::build(vm, vm->coreatoms.succeeded);
   } else {
     return { vm, statusVar };

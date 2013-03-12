@@ -77,6 +77,57 @@ TEST_F(CstTest, ConstraintVarInterface) {
   EXPECT_TRUE(ConstraintVar(x).assigned(vm));
 }
 
+TEST_F(CstTest, ConstraintSpaceInterface) {
+  Space *tps = vm->getCurrentSpace();
+  Space* s1 = new (vm) Space(vm, tps);
+
+  EXPECT_TRUE(vm->getCurrentSpace()->isTopLevel());
+  EXPECT_TRUE(tps->isTopLevel());
+  EXPECT_FALSE(s1->isTopLevel());
+
+  s1->install();
+
+  EXPECT_FALSE(vm->getCurrentSpace()->isTopLevel());
+  EXPECT_TRUE(tps->isTopLevel());
+  EXPECT_FALSE(s1->isTopLevel());
+
+  UnstableNode rtps = ReifiedSpace::build(vm,tps);
+  UnstableNode rs1 = ReifiedSpace::build(vm,s1);
+
+  //UnstableNode m = SmallInt::build(vm,2);
+  //UnstableNode M = SmallInt::build(vm,4);
+  //UnstableNode x=CstIntVar::build(vm,m,M);
+  nativeint v(0);
+  UnstableNode x = CstIntVar::build(vm,v);
+
+  EXPECT_FALSE(ConstraintSpace(rtps).isConstraintSpace(vm));
+  EXPECT_TRUE(ConstraintSpace(rs1).isConstraintSpace(vm));
+
+  tps->install();
+
+  EXPECT_TRUE(vm->getCurrentSpace()->isTopLevel());
+  EXPECT_TRUE(tps->isTopLevel());
+  EXPECT_FALSE(s1->isTopLevel());
+
+  std::cout << "Incio askSpace" << std::endl;
+  UnstableNode rs2 = SpaceLike(rs1).askSpace(vm);
+  std::cout << "fin askSpace" << std::endl;
+  
+  RichNode statusVar = *s1->getStatusVar();
+  EXPECT_TRUE(statusVar.isTransient());
+
+  //EXPECT_FALSE(ConstraintSpace(rtps).isConstraintSpace(vm));
+  //EXPECT_TRUE(ConstraintSpace(rs1).isConstraintSpace(vm));
+  //EXPECT_TRUE(ConstraintSpace(rs2).isConstraintSpace(vm));
+
+  
+  /*
+  GecodeSpace& cst = ConstraintSpace(sp1).constraintSpace(vm);
+  cst.dumpSpaceInformation();
+  GecodeSpace& cst1 = space1->getCstSpace();
+  cst1.dumpSpaceInformation();*/
+}
+
 /*TEST_F(CstTest, CstIntVarIntVarLikeInterface) {
   nativeint v(0);
   UnstableNode x = CstIntVar::build(vm,v);

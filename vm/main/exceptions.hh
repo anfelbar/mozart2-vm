@@ -37,8 +37,10 @@ void MOZART_NORETURN fail(VM vm) {
 
 inline
 void MOZART_NORETURN waitFor(VM vm, RichNode waitee) {
-  vm->getGlobalExceptionMechanism().throwException(
+	std::cout << "Inicio waitFor File: exceptions.hh Line 40" << std::endl;
+	vm->getGlobalExceptionMechanism().throwException(
     ExceptionKind::ekWaitBefore, waitee.getStableRef(vm));
+    std::cout << "Fin waitFor File: exceptions.hh Line 43" << std::endl;
 }
 
 inline

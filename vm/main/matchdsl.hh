@@ -396,8 +396,9 @@ struct CapturePattern {
  */
 inline
 void waitForIfTransient(VM vm, RichNode value) {
-  if (value.isTransient())
-    waitFor(vm, value);
+  if (value.isTransient()){
+    std::cout << "In if waitForIfTransient File: matchdsl.hh Line: 400" << std::endl;
+    waitFor(vm, value);}
 }
 
 } // namespace internal
@@ -592,9 +593,11 @@ template <class LT, class... Args>
 inline
 bool matchesTuple(VM vm, RichNode value, LT labelPat, Args... fieldsPats) {
   if (value.type() != Tuple::type()) {
+    std::cout << "In if matchesTuple File: matchdsl.hh Line: 595" << std::endl;
     internal::waitForIfTransient(vm, value);
     return false;
   }
+	std::cout << "out" << std::endl;
 
   auto tuple = value.as<Tuple>();
 
