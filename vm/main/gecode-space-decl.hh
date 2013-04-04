@@ -68,5 +68,12 @@ public:
 	      << "\tInteger variables: " << _intVars.size() << std::endl
 	      << "\tset variables: " << _setVars.size() << std::endl;
   }
+
+  void imprimir(){
+    std::cout << "Space Variables" << std::endl;
+    for(unsigned int i=0; i<_intVars.size(); i++){
+      std::cout << "Variable[" << i << "] = " << _intVars[i] << std::endl;
+    }
+  }
 };
 }

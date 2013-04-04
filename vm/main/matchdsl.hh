@@ -396,8 +396,8 @@ struct CapturePattern {
  */
 inline
 void waitForIfTransient(VM vm, RichNode value) {
-  if (value.isTransient())
-    waitFor(vm, value);
+  if (value.isTransient()){
+    waitFor(vm, value);}
 }
 
 } // namespace internal

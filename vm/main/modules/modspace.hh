@@ -57,6 +57,18 @@ public:
     }
   };
 
+  class Inject: public Builtin<Inject> {
+  public:
+    Inject(): Builtin("inject") {}
+    
+    static void call(VM vm, In target, In space) {
+      //Space* sp = ConstraintSpace(space).space(vm);
+      //sp->clearStatusVar(vm);
+      //ozcalls::asyncOzCall(vm, sp, target, *sp->getRootVar());
+      return SpaceLike(space).injectSpace(vm, target);
+    }
+  };
+
   class Is: public Builtin<Is> {
   public:
     Is(): Builtin("is") {}

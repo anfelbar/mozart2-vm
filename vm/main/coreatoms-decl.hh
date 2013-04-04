@@ -85,6 +85,7 @@ struct CoreAtoms {
   atom_t spaceNoChoice;
   atom_t spaceAltRange;
   atom_t spaceMerged;
+  atom_t spaceFailed;
   atom_t indexOutOfBounds;
 
   // Constraint programming
@@ -136,6 +137,8 @@ struct CoreAtoms {
   atom_t int_values_max;
   
 
+ // Distribuitor
+  atom_t naive;
 };
 
 }

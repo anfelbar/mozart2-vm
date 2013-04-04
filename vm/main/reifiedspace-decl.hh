@@ -53,13 +53,26 @@ public:
 
   inline
   static void create(SpaceRef& self, VM vm, GR gr, ReifiedSpace from);
+
 public:
   Space* getSpace() {
     return _space;
   }
+
 public:
+  inline
+  bool isConstraintSpace(RichNode self, VM vm);
+
+  GecodeSpace& constraintSpace(RichNode self, VM vm) {
+    return _space->getCstSpace();
+  }
+  
   bool isSpace(VM vm) {
     return true;
+  }
+
+  Space* space(RichNode self, VM vm) {
+    return getSpace();
   }
 
   inline
@@ -67,6 +80,9 @@ public:
 
   inline
   UnstableNode askVerboseSpace(RichNode self, VM vm);
+
+  inline
+  void injectSpace(RichNode self, VM vm, RichNode callable);
 
   inline
   UnstableNode mergeSpace(RichNode self, VM vm);
@@ -121,6 +137,9 @@ public:
   UnstableNode askVerboseSpace(VM vm);
 
   inline
+  void injectSpace(VM vm, RichNode callable);
+
+  inline
   UnstableNode mergeSpace(VM vm);
 
   inline
@@ -169,6 +188,9 @@ public:
 
   inline
   UnstableNode askVerboseSpace(VM vm);
+
+  inline
+  void injectSpace(VM vm, RichNode callable);
 
   inline
   UnstableNode mergeSpace(VM vm);

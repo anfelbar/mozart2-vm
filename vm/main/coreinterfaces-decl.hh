@@ -553,6 +553,10 @@ struct Interface<SpaceLike>:
     raiseTypeError(vm, MOZART_STR("Space"), self);
   }
 
+  void injectSpace(RichNode self, VM vm, RichNode callable) {
+    raiseTypeError(vm, MOZART_STR("Space"), self);
+  }
+
   UnstableNode mergeSpace(RichNode self, VM vm) {
     raiseTypeError(vm, MOZART_STR("Space"), self);
   }
@@ -673,7 +677,7 @@ struct Interface<StringLike>:
 class ConstraintVar;
 template <>
 struct Interface<ConstraintVar>:
-    ImplementedBy<SmallInt, CstIntVar>,
+  ImplementedBy<SmallInt, CstIntVar>,
   NoAutoReflectiveCalls {
 
   bool assigned(RichNode self, VM vm) {
@@ -684,7 +688,7 @@ struct Interface<ConstraintVar>:
 class IntVarLike;
 template<>
 struct Interface<IntVarLike>:
-    ImplementedBy<SmallInt, CstIntVar>,
+  ImplementedBy<SmallInt, CstIntVar>,
   NoAutoReflectiveCalls {
 
   bool isIntVarLike(RichNode self, VM vm) {
@@ -692,9 +696,9 @@ struct Interface<IntVarLike>:
   }
 
   Gecode::IntVar& intVar(RichNode self, VM vm) {
-      raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
-    }
-  
+    raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+  }  
+
   UnstableNode min(RichNode self, VM vm) {
     raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
   }
@@ -711,7 +715,25 @@ struct Interface<IntVarLike>:
     raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
   }    
 };
-  
+
+class ConstraintSpace;
+template<>
+struct Interface<ConstraintSpace>:
+  ImplementedBy<ReifiedSpace>,
+  NoAutoReflectiveCalls {
+
+  bool isConstraintSpace(RichNode self, VM vm) {
+    return false;
+  }
+
+  Space* space(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("ReifiedSpace"), self);
+  }
+
+  GecodeSpace& constraintSpace(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("ConstraintSpace"), self);
+  }
+};
 #endif
   
 }

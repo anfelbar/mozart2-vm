@@ -37,7 +37,7 @@ void MOZART_NORETURN fail(VM vm) {
 
 inline
 void MOZART_NORETURN waitFor(VM vm, RichNode waitee) {
-  vm->getGlobalExceptionMechanism().throwException(
+	vm->getGlobalExceptionMechanism().throwException(
     ExceptionKind::ekWaitBefore, waitee.getStableRef(vm));
 }
 

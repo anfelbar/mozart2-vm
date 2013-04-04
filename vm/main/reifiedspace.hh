@@ -121,7 +121,7 @@ void ReifiedSpace::create(SpaceRef& self, VM vm, GR gr, ReifiedSpace from) {
 }
 
 UnstableNode ReifiedSpace::askSpace(RichNode self, VM vm) {
-  using namespace patternmatching;
+	using namespace patternmatching;
 
   Space* space = getSpace();
 
@@ -129,6 +129,7 @@ UnstableNode ReifiedSpace::askSpace(RichNode self, VM vm) {
     raise(vm, vm->coreatoms.spaceAdmissible, self);
 
   RichNode statusVar = *space->getStatusVar();
+
   if (matchesTuple(vm, statusVar, vm->coreatoms.succeeded, wildcard())) {
     return Atom::build(vm, vm->coreatoms.succeeded);
   } else {
@@ -148,6 +149,11 @@ UnstableNode ReifiedSpace::askVerboseSpace(RichNode self, VM vm) {
   } else {
     return { vm, *space->getStatusVar() };
   }
+}
+
+void ReifiedSpace::injectSpace(RichNode self, VM vm, RichNode callable) {
+  Space* space = getSpace();
+  space->inject(vm, callable);
 }
 
 UnstableNode ReifiedSpace::mergeSpace(RichNode self, VM vm) {
@@ -240,6 +246,14 @@ void ReifiedSpace::killSpace(RichNode self, VM vm) {
   space->kill(vm);
 }
 
+bool ReifiedSpace::isConstraintSpace(RichNode self, VM vm) {
+  Space* space = getSpace();
+  if(space->hasConstraintSpace())
+    return true;
+  else
+    return false;
+}
+
 /////////////////
 // FailedSpace //
 /////////////////
@@ -255,6 +269,10 @@ UnstableNode FailedSpace::askSpace(VM vm) {
 
 UnstableNode FailedSpace::askVerboseSpace(VM vm) {
   return Atom::build(vm, vm->coreatoms.failed);
+}
+
+void FailedSpace::injectSpace(VM vm, RichNode callable) {
+  // nothing to do
 }
 
 UnstableNode FailedSpace::mergeSpace(VM vm) {
@@ -288,6 +306,10 @@ UnstableNode MergedSpace::askSpace(VM vm) {
 
 UnstableNode MergedSpace::askVerboseSpace(VM vm) {
   return Atom::build(vm, vm->coreatoms.merged);
+}
+
+void MergedSpace::injectSpace(VM vm, RichNode callable) {
+  raise(vm, vm->coreatoms.spaceMerged);
 }
 
 UnstableNode MergedSpace::mergeSpace(VM vm) {

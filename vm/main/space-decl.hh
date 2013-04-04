@@ -166,6 +166,9 @@ public:
   void fail(VM vm);
 
   inline
+  void inject(VM vm, RichNode callable);
+
+  inline
   bool merge(VM vm, Space* destSpace);
 
   inline
@@ -355,7 +358,8 @@ public:
   bool hasConstraintSpace() {
     return _cstSpace != nullptr;
   }
-#endif
+
+  #endif
 
 // Fields
 
@@ -388,6 +392,7 @@ private:
 
   // Gecode space associated with this mozart space
 #ifdef VM_HAS_CSS
+public:
   GecodeSpace* _cstSpace;
 #endif
   /*
