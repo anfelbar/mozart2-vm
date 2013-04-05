@@ -262,6 +262,11 @@ void ReifiedSpace::killSpace(RichNode self, VM vm) {
   space->kill(vm);
 }
 
+void ReifiedSpace::injectSpace(RichNode self, VM vm, RichNode callable) {
+  Space* space = getSpace();
+  space->inject(vm, callable);
+}
+
 #ifdef VM_HAS_CSS
   void ReifiedSpace::info(RichNode self, VM vm) {
     Space* space = getSpace();
@@ -274,6 +279,14 @@ void ReifiedSpace::killSpace(RichNode self, VM vm) {
     }else{
       std::cout << "This space has no constraint space..." << std::endl;
     }
+  }
+
+  bool ReifiedSpace::isConstraintSpace(RichNode self, VM vm) {
+    Space* space = getSpace();
+    if(space->hasConstraintSpace())
+      return true;
+    else
+      return false;
   }
 #endif
 
@@ -307,6 +320,10 @@ UnstableNode FailedSpace::cloneSpace(VM vm) {
 }
 
 void FailedSpace::killSpace(VM vm) {
+  // nothing to do
+}
+
+void FailedSpace::injectSpace(VM vm, RichNode callable) {
   // nothing to do
 }
 
@@ -346,6 +363,10 @@ UnstableNode MergedSpace::cloneSpace(VM vm) {
 
 void MergedSpace::killSpace(VM vm) {
   // nothing to do
+}
+
+void MergedSpace::injectSpace(VM vm, RichNode callable) {
+  raise(vm, vm->coreatoms.spaceMerged);
 }
 
 #ifdef VM_HAS_CSS

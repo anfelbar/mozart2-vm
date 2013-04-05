@@ -327,6 +327,12 @@ void Space::kill(VM vm) {
   bindStatusVar(vm, build(vm, vm->coreatoms.failed));
 }
 
+void Space::inject(VM vm, RichNode callable) {
+  Space* src = this;
+  src->clearStatusVar(vm);
+  ozcalls::asyncOzCall(vm, src, callable, *src->getRootVar());
+}
+
 // Status variable
 
 void Space::clearStatusVar(VM vm) {

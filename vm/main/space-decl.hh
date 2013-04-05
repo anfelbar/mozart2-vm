@@ -177,6 +177,9 @@ public:
   inline
   void kill(VM vm);
 
+  inline
+  void inject(VM vm, RichNode callable);
+
 // Distributor
 
 public:

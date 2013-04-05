@@ -569,6 +569,10 @@ struct Interface<SpaceLike>:
     raiseTypeError(vm, MOZART_STR("Space"), self);
   }
 
+  void injectSpace(RichNode self, VM vm, RichNode callable) {
+    raiseTypeError(vm, MOZART_STR("Space"), self);
+  }
+
 #ifdef VM_HAS_CSS
   void info(RichNode self, VM vm) {
     raiseTypeError(vm, MOZART_STR("Space"), self);
@@ -747,6 +751,21 @@ struct Interface<BoolVarLike>:
   Gecode::BoolVar& boolVar(RichNode self, VM vm) {
       raiseTypeError(vm, MOZART_STR("BoolVarLike"), self);
     }
+};
+
+class ConstraintSpace;
+template<>
+struct Interface<ConstraintSpace>:
+  ImplementedBy<ReifiedSpace>,
+  NoAutoReflectiveCalls {
+
+  bool isConstraintSpace(RichNode self, VM vm) {
+    return false;
+  }
+
+  GecodeSpace& constraintSpace(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("ConstraintSpace"), self);
+  }
 };
   
 #endif

@@ -74,6 +74,7 @@ namespace mozart {
 #include "IntVarLike-interf.hh"
 #include "SetVarLike-interf.hh"
 #include "BoolVarLike-interf.hh"
+#include "ConstraintSpace-interf.hh"
 #endif
 
 //////////////
