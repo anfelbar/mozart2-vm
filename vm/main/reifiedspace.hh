@@ -128,11 +128,32 @@ UnstableNode ReifiedSpace::askSpace(RichNode self, VM vm) {
   if (!space->isAdmissible(vm))
     raise(vm, vm->coreatoms.spaceAdmissible, self);
 
-  RichNode statusVar = *space->getStatusVar();
+#ifdef VM_HAS_CSS 
+    int gecodeStatus=-1;
+    if(space->hasConstraintSpace()){
+      //Propagate the constraint space associated to this mozart space
+      gecodeStatus = (space->getCstSpace()).propagate();
+      //if the mozart space is failed, then return failed (failed space is strongest than distributable space?)
+      if (gecodeStatus == 0){//failed space return immediately.
+	return Atom::build(vm, vm->coreatoms.failed);
+      }
+    }
 
+#endif
+  RichNode statusVar = *space->getStatusVar();
   if (matchesTuple(vm, statusVar, vm->coreatoms.succeeded, wildcard())) {
+#ifdef VM_HAS_CSS
+    if(gecodeStatus == 2){
+      //if the mozart space is succeded, then return this tuple (distributable space is strongest than succeded space?).
+      const Gecode::Choice *ch = space->getCstSpace().choice();
+      unsigned int all = ch->alternatives();
+      //if distributable space then create tuple alternatives(N)
+      return buildTuple(vm, vm->coreatoms.alternatives, (nativeint)all);
+    }
+#endif
     return Atom::build(vm, vm->coreatoms.succeeded);
   } else {
+    
     return { vm, statusVar };
   }
 }
@@ -187,6 +208,18 @@ void ReifiedSpace::commitSpace(RichNode self, VM vm, RichNode value) {
 
   Space* space = getSpace();
 
+#ifdef VM_HAS_CSS
+  if(space->hasConstraintSpace()){
+    if(space->getCstSpace().branchers()!=0){
+      nativeint alt= getArgument<nativeint>(vm,value, MOZART_STR("integer"));
+      const Gecode::Choice *ch = space->getCstSpace().choice();
+      space->getCstSpace().commit(*ch, (unsigned int)alt);
+      //std::cout << "commit done " << std::endl;
+      return;
+    }
+  }
+#endif
+
   if (!space->isAdmissible(vm))
     raise(vm, vm->coreatoms.spaceAdmissible);
 
@@ -229,6 +262,34 @@ void ReifiedSpace::killSpace(RichNode self, VM vm) {
   space->kill(vm);
 }
 
+void ReifiedSpace::injectSpace(RichNode self, VM vm, RichNode callable) {
+  Space* space = getSpace();
+  space->inject(vm, callable);
+}
+
+#ifdef VM_HAS_CSS
+  void ReifiedSpace::info(RichNode self, VM vm) {
+    Space* space = getSpace();
+
+    if (!space->isAdmissible(vm))
+      return raise(vm, vm->coreatoms.spaceAdmissible);
+
+    if(space->hasConstraintSpace()){
+      space->getCstSpace().dumpSpaceInformation();
+    }else{
+      std::cout << "This space has no constraint space..." << std::endl;
+    }
+  }
+
+  bool ReifiedSpace::isConstraintSpace(RichNode self, VM vm) {
+    Space* space = getSpace();
+    if(space->hasConstraintSpace())
+      return true;
+    else
+      return false;
+  }
+#endif
+
 /////////////////
 // FailedSpace //
 /////////////////
@@ -262,6 +323,15 @@ void FailedSpace::killSpace(VM vm) {
   // nothing to do
 }
 
+void FailedSpace::injectSpace(VM vm, RichNode callable) {
+  // nothing to do
+}
+
+#ifdef VM_HAS_CSS
+  void FailedSpace::info(VM vm) {
+    // nothing to do                                                                                                                                            
+  }
+#endif
 /////////////////
 // MergedSpace //
 /////////////////
@@ -295,6 +365,15 @@ void MergedSpace::killSpace(VM vm) {
   // nothing to do
 }
 
+void MergedSpace::injectSpace(VM vm, RichNode callable) {
+  raise(vm, vm->coreatoms.spaceMerged);
+}
+
+#ifdef VM_HAS_CSS
+  void MergedSpace::info(VM vm) {
+    // nothing to do                                                                                                                                            
+  }
+#endif
 }
 
 #endif // MOZART_GENERATOR

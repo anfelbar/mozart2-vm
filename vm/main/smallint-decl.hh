@@ -26,7 +26,7 @@
 #define __SMALLINT_DECL_H
 
 #include "mozartcore-decl.hh"
-
+#include <gecode/int.hh>
 namespace mozart {
 
 #ifndef MOZART_GENERATOR
@@ -117,6 +117,32 @@ public:
   inline
   UnstableNode modValue(VM vm, nativeint b);
 
+#ifdef VM_HAS_CSS
+public:
+  // ConstraintVar interface
+  inline
+  bool assigned(VM vm);
+public:
+  // IntVarLike interface
+  inline
+  bool isIntVarLike(VM vm);
+
+  inline
+  Gecode::IntVar& intVar(RichNode self, VM vm);
+
+  inline
+  UnstableNode min(VM vm);
+
+  inline
+  UnstableNode max(VM vm);
+
+  inline
+  UnstableNode value(VM vm);
+
+  inline
+  UnstableNode isIn(VM vm, RichNode right);
+
+#endif
 public:
   // Miscellaneous
 

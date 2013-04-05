@@ -126,6 +126,10 @@ void Space::constructor(VM vm, bool isTopLevel, Space* parent) {
 
   threadCount = 0;
   cascadedRunnableThreadCount = 0;
+
+#ifdef VM_HAS_CSS
+  _cstSpace = nullptr;
+#endif
 }
 
 Space::Space(GR gr, Space* from) {
@@ -185,6 +189,23 @@ Space::Space(GR gr, Space* from) {
   if (gr->kind() == GraphReplicator::grkSpaceCloning) {
     // A stable space, by definition, has no runnable threads
     assert(cascadedRunnableThreadCount == 0);
+  }
+#endif
+
+  // constraint space initialization
+  // TODO: in this constructor Should I create a clone of the constraint
+  // space that is insidefrom?
+#ifdef VM_HAS_CSS
+  if(from->hasConstraintSpace()){
+    assert(_cstSpace==nullptr);
+    if(!from->getCstSpace().failed()){
+      _cstSpace = (GecodeSpace*) from->getCstSpace().clone(false);
+    }else{
+      _cstSpace = nullptr;
+    }
+    //_cstSpace->copyVars(from->getCstSpace());
+  }else{
+    _cstSpace = nullptr;
   }
 #endif
 }
@@ -264,6 +285,14 @@ bool Space::merge(VM vm, Space* dest) {
     if (src->cascadedRunnableThreadCount > 0)
       dest->cascadedRunnableThreadCount += src->cascadedRunnableThreadCount-1;
   }
+#ifdef VM_HAS_CSS
+  if(src->hasConstraintSpace()){
+    //anfelbar@: This is mandatory... I believe.
+    assert(dest->hasConstraintSpace());
+    //anfelbar@: Update all constraint vars of currentSpace.
+    dest->getCstSpace().reflectVars(src->getCstSpace());
+  }
+#endif
 
   // Merge constraints
   return src->installThis(/* isMerge = */ true);
@@ -296,6 +325,12 @@ void Space::kill(VM vm) {
 
   assert(vm->getCurrentSpace() == parent);
   bindStatusVar(vm, build(vm, vm->coreatoms.failed));
+}
+
+void Space::inject(VM vm, RichNode callable) {
+  Space* src = this;
+  src->clearStatusVar(vm);
+  ozcalls::asyncOzCall(vm, src, callable, *src->getRootVar());
 }
 
 // Status variable
@@ -596,7 +631,6 @@ void Space::createPropagateThreadOnceAndSuspendItOnVar(
     propagateThread->suspendOnVar(vm, variable);
   }
 }
-
 }
 
 #endif // MOZART_GENERATOR
