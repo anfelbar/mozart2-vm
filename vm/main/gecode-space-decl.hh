@@ -15,10 +15,9 @@ class GecodeSpace : public Gecode::Space {
 private:
   std::vector<Gecode::IntVar> _intVars;
   std::vector<Gecode::SetVar> _setVars;
-  
 public:
   GecodeSpace(void)
-    : Gecode::Space() {
+  : Gecode::Space(){
     std::cout << "Constructed gecode space" << std::endl;
   }
   
@@ -36,12 +35,13 @@ public:
   virtual ~GecodeSpace(void) {
     std::cout << "Destructed gecode space" << std::endl;
   }
-
+  
   int propagate(void){
+    std::cout << "GecodeSpace: propagating... " <<  std::endl;
     return (int)(this->status());
   }
   
-  virtual Gecode::Space* copy(bool share) override {
+  virtual Gecode::Space* copy(bool share) {
     return new GecodeSpace(share,*this);
   }
   
@@ -67,6 +67,10 @@ public:
 	      << std::endl
 	      << "\tInteger variables: " << _intVars.size() << std::endl
 	      << "\tset variables: " << _setVars.size() << std::endl;
+    for(unsigned int i=0; i<_intVars.size(); ++i){
+      if(_intVars[i].size()==1)
+	std::cout << "FD variable in pos " << i+1 << " is assigned to value " << _intVars[i].val() << std::endl;
+    }
   }
 
   void imprimir(){

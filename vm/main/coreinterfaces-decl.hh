@@ -572,6 +572,13 @@ struct Interface<SpaceLike>:
   void killSpace(RichNode self, VM vm) {
     raiseTypeError(vm, MOZART_STR("Space"), self);
   }
+
+#ifdef VM_HAS_CSS
+  void info(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("Space"), self);
+  }
+#endif
+
 };
 
 class ThreadLike;

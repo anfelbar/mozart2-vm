@@ -155,6 +155,18 @@ public:
       }
     }
   };
+
+#ifdef VM_HAS_CSS
+  class Info: public Builtin<Info> {
+  public:
+    Info(): Builtin("info") {}
+
+    static void call(VM vm, In space) {
+      return SpaceLike(space).info(vm);
+    }
+  };
+#endif
+
 };
 
 }

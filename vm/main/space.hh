@@ -197,7 +197,9 @@ Space::Space(GR gr, Space* from) {
   // space that is insidefrom?
 #ifdef VM_HAS_CSS
   if(from->hasConstraintSpace()){
-    _cstSpace = (GecodeSpace*) (from->getCstSpace()).copy(false);
+    assert(_cstSpace==nullptr);
+    _cstSpace = (GecodeSpace*) from->getCstSpace().clone(false);
+    //_cstSpace->copyVars(from->getCstSpace());
   }else{
     _cstSpace = nullptr;
   }
@@ -480,40 +482,6 @@ void Space::checkStability() {
     // Succeeded
     vm->setCurrentSpace(parent);
 
-#ifdef VM_HAS_CSS 
-    int gecodeStatus=-1;
-    if(hasConstraintSpace()){
-      //Propagate the constraint space associated to this mozart space
-      gecodeStatus = (getCstSpace()).propagate();
-      
-      if (gecodeStatus == 0){//failed space return immediately.
-	bindStatusVar(vm, build(vm, vm->coreatoms.failed));
-	return;
-      }
-    
-    //if distributable space then create tuple alternatives(N)
-    //if the mozart space is succeded, then return this tuple (distributable space is strongest than succeded space?).
-    //if the mozart space is failed, then return failed (failed space is strongest than distributable space?)
-    if (gecodeStatus == 2){
-      const Gecode::Choice *ch = getCstSpace().choice();
-      unsigned int al= ch->alternatives();
-      //std::cout << "space alternatives " << al << std::endl;
-      //unsigned int bra= getCstSpace().branchers();
-      //std::cout << "space branches " << bra << std::endl;
-      UnstableNode newStatus = buildTuple(vm, vm->coreatoms.alternatives,
-                                          (nativeint)al);
-      bindStatusVar(vm, newStatus);
-      
-      return;
-      /*r = makeTuple(vm, MOZART_STR("alternatives"), 1);
-      auto elements=RichNode(r).as<Tuple>().getElementsArray();
-      for (size_t i=0; i< 1; ++i) {
-	elements[i].init(vm, 8);
-	}*/
-    }
-  }
-#endif
-    
     if (hasDistributor()) {
       nativeint alternatives = getDistributor()->getAlternatives();
       UnstableNode newStatus = buildTuple(vm, vm->coreatoms.alternatives,
