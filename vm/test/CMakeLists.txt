@@ -28,6 +28,10 @@ set_property(TARGET custom_gtest_main PROPERTY
 include_directories("${GTEST_SRC_DIR}" "${GTEST_SRC_DIR}/include")
 
 # The testing executable
+if(BUILD_CSS)
+  include_directories(${GECODE_INCLUDES})
+  add_definitions(-DVM_HAS_CSS=1)
+endif()
 
 set(VMTEST_SRCS testutils.cc sanitytest.cc smallinttest.cc floattest.cc
   atomtest.cc gctest.cc)
@@ -37,6 +41,11 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
   list(APPEND VMTEST_SRCS coderstest.cc utftest.cc stringtest.cc
     virtualstringtest.cc bytestringtest.cc)
+endif()
+
+if(BUILD_CSS)
+  list(APPEND VMTEST_SRCS csttest.cc)
+  add_definitions("-DVM_HAS_CSS=1")
 endif()
 
 add_executable(vmtest ${VMTEST_SRCS})

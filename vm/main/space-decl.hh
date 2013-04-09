@@ -31,6 +31,10 @@
 #include "exceptions-decl.hh"
 #include "vmallocatedlist-decl.hh"
 
+#ifdef VM_HAS_CSS
+#include "gecode-space-decl.hh"
+#endif
+
 namespace mozart {
 
 struct ScriptEntry {
@@ -172,6 +176,9 @@ public:
 
   inline
   void kill(VM vm);
+
+  inline
+  void inject(VM vm, RichNode callable);
 
 // Distributor
 
@@ -331,6 +338,28 @@ private:
     _mark = false;
   }
 
+#ifdef VM_HAS_CSS
+public: 
+    // The gecode constraint space is created only when needed. That need is
+  // reflected by (for instance) the declaration of a constraint variable.
+  // This method returns the gecode space associated to the mozart space,
+  // creating a new on if needed.
+
+  // An important aspect here is that the gecode space uses external memmory.
+  // That is, memmory that is not managed by the mozart virtual machine. For
+  // that reason we have to handle the copy and clonning of gecode spaces in
+  // order to not cause memmory leaks. 
+  GecodeSpace& getCstSpace() {
+    if (_cstSpace == nullptr)
+      _cstSpace = new GecodeSpace;
+    return *_cstSpace;
+  }
+
+  bool hasConstraintSpace() {
+    return _cstSpace != nullptr;
+  }
+#endif
+
 // Fields
 
 private:
@@ -360,6 +389,10 @@ private:
   SpaceTrail trail;
   SpaceScript script;
 
+  // Gecode space associated with this mozart space
+#ifdef VM_HAS_CSS
+  GecodeSpace* _cstSpace;
+#endif
   /*
    * Maintaining a counter of threads
    * Invariants:

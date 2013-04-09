@@ -568,6 +568,17 @@ struct Interface<SpaceLike>:
   void killSpace(RichNode self, VM vm) {
     raiseTypeError(vm, MOZART_STR("Space"), self);
   }
+
+  void injectSpace(RichNode self, VM vm, RichNode callable) {
+    raiseTypeError(vm, MOZART_STR("Space"), self);
+  }
+
+#ifdef VM_HAS_CSS
+  void info(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("Space"), self);
+  }
+#endif
+
 };
 
 class ThreadLike;
@@ -669,6 +680,96 @@ struct Interface<StringLike>:
   }
 };
 
+#ifdef VM_HAS_CSS
+class ConstraintVar;
+template <>
+struct Interface<ConstraintVar>:
+    ImplementedBy<SmallInt, CstIntVar>,
+  NoAutoReflectiveCalls {
+
+  bool assigned(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("ConstraintVar"), self);
+  }
+};
+
+class IntVarLike;
+template<>
+struct Interface<IntVarLike>:
+    ImplementedBy<SmallInt, CstIntVar>,
+  NoAutoReflectiveCalls {
+
+  bool isIntVarLike(RichNode self, VM vm) {
+    return false;
+  }
+
+  Gecode::IntVar& intVar(RichNode self, VM vm) {
+      raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+    }
+  
+  UnstableNode min(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+  }
+
+  UnstableNode max(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+  }
+
+  UnstableNode value(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+  }
+  
+  UnstableNode isIn(RichNode self, VM vm, RichNode right) {
+    raiseTypeError(vm, MOZART_STR("IntVarLike"), self);
+  }    
+};
+
+class SetVarLike;
+template<>
+struct Interface<SetVarLike>:
+    ImplementedBy<CstSetVar>,
+  NoAutoReflectiveCalls {
+
+  bool isSetVarLike(RichNode self, VM vm) {
+    return false;
+  }
+
+  Gecode::SetVar& setVar(RichNode self, VM vm) {
+      raiseTypeError(vm, MOZART_STR("SetVarLike"), self);
+    }
+};
+
+class BoolVarLike;
+template<>
+struct Interface<BoolVarLike>:
+    ImplementedBy<CstBoolVar>,
+  NoAutoReflectiveCalls {
+
+  bool isBoolVarLike(RichNode self, VM vm) {
+    return false;
+  }
+
+  Gecode::BoolVar& boolVar(RichNode self, VM vm) {
+      raiseTypeError(vm, MOZART_STR("BoolVarLike"), self);
+    }
+};
+
+class ConstraintSpace;
+template<>
+struct Interface<ConstraintSpace>:
+  ImplementedBy<ReifiedSpace>,
+  NoAutoReflectiveCalls {
+
+  bool isConstraintSpace(RichNode self, VM vm) {
+    return false;
+  }
+
+  GecodeSpace& constraintSpace(RichNode self, VM vm) {
+    raiseTypeError(vm, MOZART_STR("ConstraintSpace"), self);
+  }
+};
+  
+#endif
+  
 }
 
 #endif // __COREINTERFACES_DECL_H

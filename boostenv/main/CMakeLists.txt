@@ -25,6 +25,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(MOZART_GENERATOR_FLAGS "-I/usr/lib/c++/v1")
 endif()
 
+if(BUILD_CSS)
+  list(APPEND MOZART_GENERATOR_FLAGS "-DVM_HAS_CSS=1" "-I${GECODE_INCLUDES}")
+  include_directories(${GECODE_INCLUDES})
+  add_definitions("-DVM_HAS_CSS=1")
+endif()
+
 # Mozart VM library
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../vm/main"
@@ -80,6 +86,11 @@ add_custom_target(genboostsources
   VERBATIM)
 
 # Boost environment library
+
+if(BUILD_CSS)
+  add_definitions(-DVM_HAS_CSS=1)
+  include_directories(${GECODE_INCLUDES})
+endif()
 
 add_library(mozartvmboost boostenv.cc boostenvmodules.cc)
 add_dependencies(mozartvmboost genboostsources)
