@@ -125,8 +125,8 @@ public:
       }
       return v;
     }
-  }
-  
+  } 
+
   static Gecode::IntArgs getIntArgs(VM vm, In x){
     std::vector<int> v;
     size_t width;
@@ -176,7 +176,67 @@ public:
     }
     return Gecode::IntArgs(v);
   }
+  static Gecode::IntSet getIntSet(VM vm, In x){
+    std::vector<int> v;
+    if (x.is<Cons>()){
+      StableNode* head=x.as<Cons>().getHead();
+      StableNode* tail=x.as<Cons>().getTail();
+      while (true){
+	UnstableNode uhead = Reference::build(vm, head);
+	RichNode rhead = uhead;
+	if(rhead.is<SmallInt>()){
+	  assert(rhead.is<SmallInt>());
+	  nativeint val=rhead.as<SmallInt>().value();
+	  v.push_back((int)(val));
+	  v.push_back((int)(val));
+	} else 
+	  if(rhead.is<Tuple>()){
+	    size_t widtht = rhead.as<Tuple>().getWidth();
+	    for(unsigned int i=0; i<widtht; i++){
+	      StableNode* t=rhead.as<Tuple>().getElement(i);
+	      UnstableNode a = Reference::build(vm, t);
+	      RichNode tt = a;
+	      assert(tt.is<SmallInt>());
+	      nativeint val=tt.as<SmallInt>().value();
+	      v.push_back((int)(val));
+	    }
+	  }
+	  UnstableNode utail = Reference::build(vm, tail);
+	  RichNode rtail = utail;
+	  if (!rtail.is<Cons>()){
+	    break;
+	  }	  
+	  UnstableNode ncons = Reference::build(vm, tail);
+	  RichNode rncons = ncons;
+	  head=rncons.as<Cons>().getHead();
+	  tail=rncons.as<Cons>().getTail();	
+	} 
+      int pairs[v.size()/2][2];
+      int i=0;
+      int ii=0;
+      while (i<v.size()){
+	pairs[ii][0]= v[i];
+	pairs[ii][1]= v[i+1];
+	i=i+2;
+	ii++;
+      }
+      return Gecode::IntSet(pairs, v.size()/2);
+    }
+          
+    return Gecode::IntSet();
+  }
    
+  class Dom: public Builtin<Dom> {
+  public:
+    Dom(): Builtin("dom") {}
+
+    static void call(VM vm, In x, In s) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::dom(home,IntVarLike(x).intVar(vm),getIntSet(vm,s));
+    }
+  };
+
   class Rel: public Builtin<Rel> {
   public:
     Rel(): Builtin("rel") {}
@@ -236,7 +296,6 @@ public:
       Gecode::branch(home,getIntVarArgs(vm,x),bvart,bvalt); 
     }
   };
-
 }; // class ModIntVarProp
 } // namespace builtins
 } // namespace mozart
