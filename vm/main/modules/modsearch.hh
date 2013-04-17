@@ -19,14 +19,13 @@ public:
 	public:
 		DFS(): Builtin("dfs") {}
 
-	    static void call(VM vm, In space, Out result) {
+	    static void call(VM vm, In space) {
 			if(ConstraintSpace(space).isConstraintSpace(vm)) { 
-				GecodeSpace& gs = ConstraintSpace(space).constraintSpace(vm);
-				Gecode::DFS<GecodeSpace> e(&gs);
-				GecodeSpace *sol = e.next();
-				//gs = sol;
+				GecodeSpace* gs = ConstraintSpace(space).constraintSpace(vm);
+				Gecode::DFS<GecodeSpace> e(gs);
+				while (GecodeSpace *sol = e.next())
+					ConstraintSpace(space).changeConstraintSpace(vm, sol);
 
-				//result = SpaceLike(space).cloneSpace(vm);
 			}
 
 		}

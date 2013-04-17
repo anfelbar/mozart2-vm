@@ -90,9 +90,14 @@ public:
   inline
   bool isConstraintSpace(RichNode self, VM vm);
 
-  GecodeSpace& constraintSpace(RichNode self, VM vm) {
-    return _space->getCstSpace();
+  GecodeSpace* constraintSpace(RichNode self, VM vm) {
+    return &_space->getCstSpace();
   }
+
+  void changeConstraintSpace(RichNode self, VM vm, GecodeSpace* gs) {
+    return _space->changeCstSpace(gs);
+  }
+
 #endif
 private:
   SpaceRef _space;
