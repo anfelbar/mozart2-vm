@@ -262,6 +262,28 @@ public:
     }
     return Gecode::IntSharedArray();
   }
+
+  class Min: public Builtin<Min> {
+  public:
+    Min(): Builtin("min") {}
+
+    static void call(VM vm, In x0, In x1, In x2) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::min(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+    }
+  };
+
+  class Min2: public Builtin<Min2> {
+  public:
+    Min2(): Builtin("min2") {}
+
+    static void call(VM vm, In x, In y) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::min(home,getIntVarArgs(vm,x),IntVarLike(y).intVar(vm));
+    }
+  };
   
   class Dom: public Builtin<Dom> {
   public:
@@ -283,7 +305,6 @@ public:
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
       Gecode::IntRelType rt = atomToRelType(vm,r);
       Gecode::count(home,getIntVarArgs(vm,x),(int)(n.as<SmallInt>().value()),rt,(int)(m.as<SmallInt>().value()));
-      home.status();
     }
   };
 
