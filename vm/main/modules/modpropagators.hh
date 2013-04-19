@@ -255,6 +255,13 @@ public:
       return v;
     }
   }
+
+  static Gecode::IntSharedArray getIntSharedArray(VM vm,In x){
+    if(x.is<Cons>()){
+      return Gecode::IntSharedArray(getIntArgs(vm,x));
+    }
+    return Gecode::IntSharedArray();
+  }
   
   class Dom: public Builtin<Dom> {
   public:
@@ -339,6 +346,18 @@ public:
       Gecode::branch(home,getIntVarArgs(vm,x),bvart,bvalt); 
     }
   };
+
+  class Element: public Builtin<Element>{
+  public:
+    Element(): Builtin("element") {}
+    
+    static void call(VM vm, In n, In x0, In x1){
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::element(home, getIntSharedArray(vm,n), IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+    }
+  };
+
 }; // class ModIntVarProp
 } // namespace builtins
 } // namespace mozart
