@@ -296,7 +296,74 @@ public:
     }
   };
 
-  class Count: public Builtin<Count> {
+  class Dom1: public Builtin<Dom1> {
+  public:
+    Dom1(): Builtin("dom1") {}
+
+    static void call(VM vm, In x, In s) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      assert(s.is<SmallInt>());
+      nativeint num = s.as<SmallInt>().value();
+      Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(num));
+    }
+  };
+
+  class Dom2: public Builtin<Dom2> {
+  public:
+    Dom2(): Builtin("dom2") {}
+
+    static void call(VM vm, In x, In s) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      assert(s.is<SmallInt>());
+      nativeint num = s.as<SmallInt>().value();
+      Gecode::dom(home,getIntVarArgs(vm,x),(int)(num));
+    }
+  };
+
+  class Dom3: public Builtin<Dom3> {
+  public:
+    Dom3(): Builtin("dom3") {}
+
+    static void call(VM vm, In x, In min, In max) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      assert(min.is<SmallInt>());
+      assert(max.is<SmallInt>());
+      nativeint nmin = min.as<SmallInt>().value();
+      nativeint nmax = max.as<SmallInt>().value();
+      Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(nmin), (int)(nmax));
+    }
+  };
+
+  class Dom4: public Builtin<Dom4> {
+  public:
+    Dom4(): Builtin("dom4") {}
+
+    static void call(VM vm, In x, In min, In max) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      assert(min.is<SmallInt>());
+      assert(max.is<SmallInt>());
+      nativeint nmin = min.as<SmallInt>().value();
+      nativeint nmax = max.as<SmallInt>().value();
+      Gecode::dom(home,getIntVarArgs(vm,x),(int)(nmin), (int)(nmax));
+    }
+  };
+
+  class Dom5: public Builtin<Dom5> {
+  public:
+    Dom5(): Builtin("dom5") {}
+
+    static void call(VM vm, In x, In s) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      Gecode::dom(home,getIntVarArgs(vm,x),getIntSet(vm,s));
+    }
+  }; 
+
+ class Count: public Builtin<Count> {
   public:
     Count(): Builtin("count") {}
 
