@@ -73,8 +73,53 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
     return Gecode::INT_VAL_MIN;
   }
 
+  static bool isIntVarArgs(VM vm, In x){
+    bool v=true;
+    size_t width;
+
+    if(x.is<Tuple>()){
+      width = x.as<Tuple>().getWidth();
+      for(unsigned int i=0; i<width; i++){
+      	StableNode* t=x.as<Tuple>().getElement(i);
+	UnstableNode a = Reference::build(vm, t);
+	RichNode tt = a;
+	v = IntVarLike(tt).isIntVarLike(vm);
+      }
+    }else if(x.is<Cons>()){
+      StableNode* head=x.as<Cons>().getHead();
+      StableNode* tail=x.as<Cons>().getTail();
+      while (true){
+      	UnstableNode uhead = Reference::build(vm, head);
+      	RichNode rhead = uhead;
+	v = IntVarLike(rhead).isIntVarLike(vm);
+	UnstableNode utail = Reference::build(vm, tail);
+      	RichNode rtail = utail;
+	if (!rtail.is<Cons>()){
+	  break;
+	}
+      	UnstableNode ncons = Reference::build(vm, tail);
+      	RichNode rncons = ncons;
+      	head=rncons.as<Cons>().getHead();
+	tail=rncons.as<Cons>().getTail();	
+      }
+    }else {
+      width = x.as<Record>().getWidth();
+      for(unsigned int i=0; i<width; i++){
+      	StableNode* t=x.as<Record>().getElement(i);
+      	UnstableNode a = Reference::build(vm, t);
+      	RichNode tt = a;
+	v = IntVarLike(tt).isIntVarLike(vm);
+      }
+    }
+    return v;
+  }
+
   static Gecode::IntVarArgs getIntVarArgs(VM vm, In x){
     size_t width;
+
+    if(!isIntVarArgs(vm,x)){
+      raiseTypeError(vm, MOZART_STR("Finite Domain Integer Arguments"), x);
+    }
     
     if(x.is<Tuple>()){
       width = x.as<Tuple>().getWidth();
@@ -83,8 +128,7 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
       	StableNode* t=x.as<Tuple>().getElement(i);
 	UnstableNode a = Reference::build(vm, t);
 	RichNode tt = a;
-	assert(tt.is<CstIntVar>());
-	v[i] = IntVarLike(tt.as<CstIntVar>()).intVar(vm);
+	v[i] = IntVarLike(tt).intVar(vm);
       }
       return v;
     }else if(x.is<Cons>()){
@@ -94,8 +138,7 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
       while (true){
       	UnstableNode uhead = Reference::build(vm, head);
       	RichNode rhead = uhead;
-      	assert(rhead.is<CstIntVar>());
-      	v << IntVarLike(rhead.as<CstIntVar>()).intVar(vm);
+      	v << IntVarLike(rhead).intVar(vm);
 	UnstableNode utail = Reference::build(vm, tail);
       	RichNode rtail = utail;
 	if (!rtail.is<Cons>()){
@@ -114,8 +157,7 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
       	StableNode* t=x.as<Record>().getElement(i);
       	UnstableNode a = Reference::build(vm, t);
       	RichNode tt = a;
-      	assert(tt.is<CstIntVar>());
-      	v[i] = IntVarLike(tt.as<CstIntVar>()).intVar(vm);
+      	v[i] = IntVarLike(tt).intVar(vm);
       }
       return v;
     }
@@ -170,7 +212,51 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
     }
     return Gecode::IntArgs(v);
   }
+
+  static bool isIntSet(VM vm, In x){
+    bool v=true;
+    if (x.is<Cons>()){
+      StableNode* head=x.as<Cons>().getHead();
+      StableNode* tail=x.as<Cons>().getTail();
+      while (true){
+	UnstableNode uhead = Reference::build(vm, head);
+	RichNode rhead = uhead;
+	if(rhead.is<SmallInt>() or rhead.is<Tuple>()){ 
+	  if(rhead.is<Tuple>()){
+	    size_t widtht = rhead.as<Tuple>().getWidth();
+	    for(unsigned int i=0; i<widtht; i++){
+	      StableNode* t=rhead.as<Tuple>().getElement(i);
+	      UnstableNode a = Reference::build(vm, t);
+	      RichNode tt = a;
+              if(!tt.is<SmallInt>()){
+		v=false;
+	      }
+	    }
+	  }
+	}else{
+	  v=false;
+	}
+	  
+	UnstableNode utail = Reference::build(vm, tail);
+	RichNode rtail = utail;
+	if (!rtail.is<Cons>()){
+	  break;
+	}	  
+	UnstableNode ncons = Reference::build(vm, tail);
+	RichNode rncons = ncons;
+	head=rncons.as<Cons>().getHead();
+	tail=rncons.as<Cons>().getTail();	
+      } 
+    }
+    return v;
+  }
+
   static Gecode::IntSet getIntSet(VM vm, In x){
+
+    if(!isIntSet(vm,x)){
+      raiseTypeError(vm, MOZART_STR("Integer Arguments"), x);
+    }
+
     std::vector<int> v;
     if (x.is<Cons>()){
       StableNode* head=x.as<Cons>().getHead();
