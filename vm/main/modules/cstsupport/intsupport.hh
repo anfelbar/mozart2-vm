@@ -163,7 +163,61 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
     }
   } 
 
+  static bool isIntArgs(VM vm, In x){
+    bool v=true;
+    size_t width;
+    if(x.is<Tuple>()){
+      width = x.as<Tuple>().getWidth();
+      for(unsigned int i=0; i<width; i++){
+      	StableNode* t=x.as<Tuple>().getElement(i);
+	UnstableNode a = Reference::build(vm, t);
+	RichNode tt = a;
+	if(!tt.is<SmallInt>()){
+	  v=false;
+	}
+      }
+    }else if(x.is<Cons>()){
+      StableNode* head=x.as<Cons>().getHead();
+      StableNode* tail=x.as<Cons>().getTail();
+      while (true){
+	UnstableNode uhead = Reference::build(vm, head);
+	RichNode rhead = uhead;
+	if(rhead.is<SmallInt>() or rhead.is<Tuple>()){
+	  if(rhead.is<Tuple>()){
+	    size_t widtht = rhead.as<Tuple>().getWidth();
+	    for(unsigned int i=0; i<widtht; i++){
+	      StableNode* t=rhead.as<Tuple>().getElement(i);
+	      UnstableNode a = Reference::build(vm, t);
+	      RichNode tt = a;
+	      if(!tt.is<SmallInt>()){
+		v=false;
+	      }
+	    }
+	  } 
+	}else{
+	  v=false;
+	}
+	UnstableNode utail = Reference::build(vm, tail);
+	RichNode rtail = utail;
+	if (!rtail.is<Cons>()){
+	  break;
+	}
+	UnstableNode ncons = Reference::build(vm, tail);
+	RichNode rncons = ncons;
+	head=rncons.as<Cons>().getHead();
+	tail=rncons.as<Cons>().getTail();
+	
+      }
+    }
+    return v;
+  }
+
   static Gecode::IntArgs getIntArgs(VM vm, In x){
+    
+    if(!isIntArgs(vm,x)){
+      raiseTypeError(vm, MOZART_STR("Integer Arguments"), x);
+    }
+
     std::vector<int> v;
     size_t width;
     if(x.is<Tuple>()){
