@@ -102,7 +102,7 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
       	head=rncons.as<Cons>().getHead();
 	tail=rncons.as<Cons>().getTail();	
       }
-    }else {
+    }else if(x.is<Record>()){
       width = x.as<Record>().getWidth();
       for(unsigned int i=0; i<width; i++){
       	StableNode* t=x.as<Record>().getElement(i);
@@ -110,6 +110,8 @@ static Gecode::IntRelType atomToRelType(VM vm, In r) {
       	RichNode tt = a;
 	v = IntVarLike(tt).isIntVarLike(vm);
       }
+    }else{
+      v=false;
     }
     return v;
   }

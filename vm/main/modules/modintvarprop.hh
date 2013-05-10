@@ -140,40 +140,27 @@ public:
     }
   };
 
-  class Dom: public Builtin<Dom> {
-  public:
-    Dom(): Builtin("dom") {}
-
-    static void call(VM vm, In x, In s) {
-      assert(vm->getCurrentSpace()->hasConstraintSpace());
-      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::dom(home,IntVarLike(x).intVar(vm),getIntSet(vm,s));
-    }
-  };
-
-  class Dom1: public Builtin<Dom1> {
-  public:
-    Dom1(): Builtin("dom1") {}
-
-    static void call(VM vm, In x, In s) {
-      assert(vm->getCurrentSpace()->hasConstraintSpace());
-      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      assert(s.is<SmallInt>());
-      nativeint num = s.as<SmallInt>().value();
-      Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(num));
-    }
-  };
-
   class Dom2: public Builtin<Dom2> {
   public:
     Dom2(): Builtin("dom2") {}
 
-    static void call(VM vm, In x, In s) {
+    static void call(VM vm, In x, In n) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      assert(s.is<SmallInt>());
-      nativeint num = s.as<SmallInt>().value();
-      Gecode::dom(home,getIntVarArgs(vm,x),(int)(num));
+
+      if(IntVarLike(x).isIntVarLike(vm) and n.is<SmallInt>()){
+	nativeint num = n.as<SmallInt>().value();
+	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(num));
+      }else if(isIntVarArgs(vm,x) and n.is<SmallInt>()){
+	nativeint num = n.as<SmallInt>().value();
+	Gecode::dom(home,getIntVarArgs(vm,x),(int)(num));
+      }else if(IntVarLike(x).isIntVarLike(vm) and isIntSet(vm,n)){
+	Gecode::dom(home,IntVarLike(x).intVar(vm),getIntSet(vm,n));
+      }else if(isIntVarArgs(vm,x) and isIntSet(vm,n)){
+	Gecode::dom(home,getIntVarArgs(vm,x),getIntSet(vm,n));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+      }
     }
   };
 
@@ -181,14 +168,26 @@ public:
   public:
     Dom3(): Builtin("dom3") {}
 
-    static void call(VM vm, In x, In min, In max) {
+    static void call(VM vm, In x, In n, In m) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      assert(min.is<SmallInt>());
-      assert(max.is<SmallInt>());
-      nativeint nmin = min.as<SmallInt>().value();
-      nativeint nmax = max.as<SmallInt>().value();
-      Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(nmin), (int)(nmax));
+      
+      if(IntVarLike(x).isIntVarLike(vm) and n.is<SmallInt>() and m.is<SmallInt>()){
+	nativeint min = n.as<SmallInt>().value();
+	nativeint max = m.as<SmallInt>().value();
+	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(min),(int)(max));
+      }else if(isIntVarArgs(vm,x) and n.is<SmallInt>() and m.is<SmallInt>()){
+	nativeint min = n.as<SmallInt>().value();
+	nativeint max = m.as<SmallInt>().value();
+	Gecode::dom(home,getIntVarArgs(vm,x),(int)(min),(int)(max));
+      }else if(IntVarLike(x).isIntVarLike(vm) and n.is<SmallInt>() and BoolVarLike(m).isBoolVarLike(vm)){
+	nativeint num = n.as<SmallInt>().value();
+	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(num),BoolVarLike(m).boolVar(vm));
+      }else if(IntVarLike(x).isIntVarLike(vm) and isIntSet(vm,n) and BoolVarLike(m).isBoolVarLike(vm)){
+	Gecode::dom(home,IntVarLike(x).intVar(vm),getIntSet(vm,n),BoolVarLike(m).boolVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+      }
     }
   };
 
@@ -196,27 +195,19 @@ public:
   public:
     Dom4(): Builtin("dom4") {}
 
-    static void call(VM vm, In x, In min, In max) {
+    static void call(VM vm, In x, In n, In m, In b) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      assert(min.is<SmallInt>());
-      assert(max.is<SmallInt>());
-      nativeint nmin = min.as<SmallInt>().value();
-      nativeint nmax = max.as<SmallInt>().value();
-      Gecode::dom(home,getIntVarArgs(vm,x),(int)(nmin), (int)(nmax));
+      
+      if(IntVarLike(x).isIntVarLike(vm) and n.is<SmallInt>() and m.is<SmallInt>() and BoolVarLike(b).isBoolVarLike(vm)){
+	nativeint min = n.as<SmallInt>().value();
+	nativeint max = m.as<SmallInt>().value();
+	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(min),(int)(max),BoolVarLike(m).boolVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+      }
     }
   };
-
-  class Dom5: public Builtin<Dom5> {
-  public:
-    Dom5(): Builtin("dom5") {}
-
-    static void call(VM vm, In x, In s) {
-      assert(vm->getCurrentSpace()->hasConstraintSpace());
-      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::dom(home,getIntVarArgs(vm,x),getIntSet(vm,s));
-    }
-  }; 
 
  class Count: public Builtin<Count> {
   public:
