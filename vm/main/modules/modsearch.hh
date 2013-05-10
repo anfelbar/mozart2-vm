@@ -13,29 +13,28 @@ namespace builtins {
 
 class ModSearch: public Module {
 public:
-	ModSearch(): Module("Search") {}
+  ModSearch(): Module("Search") {}
 
-	class DFS: public Builtin<DFS> {
-	public:
-		DFS(): Builtin("dfs") {}
+  class DFS: public Builtin<DFS> {
+  public:
+    DFS(): Builtin("dfs") {}
 
-	    static void call(VM vm, In space) {
-			if(ConstraintSpace(space).isConstraintSpace(vm)) { 
-				GecodeSpace* gs = ConstraintSpace(space).constraintSpace(vm);
-				Gecode::DFS<GecodeSpace> e(gs);
-				GecodeSpace *sol = e.next();
-				ConstraintSpace(space).updateConstraintSpace(vm, sol);
-
-			}
-
-		}
-
-	};
+      static void call(VM vm, In space, Out result) {
+      if(ConstraintSpace(space).isConstraintSpace(vm)) { 
+        GecodeSpace* gs = ConstraintSpace(space).constraintSpace(vm);
+        Gecode::DFS<GecodeSpace> e(gs);
+        if(GecodeSpace *sol = e.next()) {
+          ConstraintSpace(space).updateConstraintSpace(vm, sol);
+          result = SpaceLike(space).cloneSpace(vm);
+        }
+        else
+          result = build(vm, vm->coreatoms.nil);
+      }
+    }
+  };
 
 };
 
 } // namespace builtins
 } // namespace mozart
 #endif // __MODSEARCH_H
-
-
