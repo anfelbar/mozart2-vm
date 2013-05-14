@@ -8,17 +8,28 @@ namespace mozart {
 
 namespace builtins {
 
-static Gecode::IntRelType atomToRelType(VM vm, In r) {
+static bool isAtomToRelType(VM vm, In r) {
     atom_t a = getArgument<atom_t>(vm,r,MOZART_STR("Atom"));
-    if (a == vm->coreatoms.irt_eq) return Gecode::IRT_EQ;
-    if (a == vm->coreatoms.irt_nq) return Gecode::IRT_NQ;
-    if (a == vm->coreatoms.irt_lq) return Gecode::IRT_LQ;
-    if (a == vm->coreatoms.irt_le) return Gecode::IRT_LE;
-    if (a == vm->coreatoms.irt_gq) return Gecode::IRT_GQ;
-    if (a == vm->coreatoms.irt_gr) return Gecode::IRT_GR;
-    raiseTypeError(vm,MOZART_STR("InvalidRelationType"),r);
-    return Gecode::IRT_GR;
+    if (a == vm->coreatoms.irt_eq or a == vm->coreatoms.irt_nq or a == vm->coreatoms.irt_lq or a == vm->coreatoms.irt_le or a == vm->coreatoms.irt_gq or a == vm->coreatoms.irt_gr){
+      return true;
+    }else{
+      return false;
+    }
   }
+
+static Gecode::IntRelType atomToRelType(VM vm, In r) {
+  if(isAtomToRelType(vm, r) == false){
+      raiseTypeError(vm,MOZART_STR("InvalidRelationType"),r);
+  }
+  atom_t a = getArgument<atom_t>(vm,r,MOZART_STR("Atom"));
+  if (a == vm->coreatoms.irt_eq) return Gecode::IRT_EQ;
+  if (a == vm->coreatoms.irt_nq) return Gecode::IRT_NQ;
+  if (a == vm->coreatoms.irt_lq) return Gecode::IRT_LQ;
+  if (a == vm->coreatoms.irt_le) return Gecode::IRT_LE;
+  if (a == vm->coreatoms.irt_gq) return Gecode::IRT_GQ;
+  if (a == vm->coreatoms.irt_gr) return Gecode::IRT_GR;
+  return Gecode::IRT_GR;
+}
   
   //Uncomment this when we use it in a propagator builtin. 
   //Avoing compilation warning.

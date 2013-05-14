@@ -159,7 +159,7 @@ public:
       }else if(isIntVarArgs(vm,x) and isIntSet(vm,n)){
 	Gecode::dom(home,getIntVarArgs(vm,x),getIntSet(vm,n));
       }else{
-	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+	raiseTypeError(vm, MOZART_STR("Propagator posting domain malformed"), x);
       }
     }
   };
@@ -186,7 +186,7 @@ public:
       }else if(IntVarLike(x).isIntVarLike(vm) and isIntSet(vm,n) and BoolVarLike(m).isBoolVarLike(vm)){
 	Gecode::dom(home,IntVarLike(x).intVar(vm),getIntSet(vm,n),BoolVarLike(m).boolVar(vm));
       }else{
-	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+	raiseTypeError(vm, MOZART_STR("Propagator posting domain malformed"), x);
       }
     }
   };
@@ -202,9 +202,9 @@ public:
       if(IntVarLike(x).isIntVarLike(vm) and n.is<SmallInt>() and m.is<SmallInt>() and BoolVarLike(b).isBoolVarLike(vm)){
 	nativeint min = n.as<SmallInt>().value();
 	nativeint max = m.as<SmallInt>().value();
-	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(min),(int)(max),BoolVarLike(m).boolVar(vm));
+	Gecode::dom(home,IntVarLike(x).intVar(vm),(int)(min),(int)(max),BoolVarLike(b).boolVar(vm));
       }else{
-	raiseTypeError(vm, MOZART_STR("Propagator posted domain malformed"), x);
+	raiseTypeError(vm, MOZART_STR("Propagator posting domain malformed"), x);
       }
     }
   };
@@ -221,15 +221,73 @@ public:
     }
   };
 
-  class Rel: public Builtin<Rel> {
+  class Rel2: public Builtin<Rel2> {
   public:
-    Rel(): Builtin("rel") {}
+    Rel2(): Builtin("rel2") {}
 
-    static void call(VM vm, In x0, In r, In x1, In icl) {
+    static void call(VM vm, In x, In r) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::IntRelType rt = atomToRelType(vm,r);
-      Gecode::rel(home,IntVarLike(x0).intVar(vm),rt,IntVarLike(x1).intVar(vm));
+      
+      if(isIntVarArgs(vm,x) and isAtomToRelType(vm,r)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	Gecode::rel(home,getIntVarArgs(vm,x),rt);
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting rel malformed"), x);
+      }
+    }
+  };
+
+  class Rel3: public Builtin<Rel3> {
+  public:
+    Rel3(): Builtin("rel3") {}
+
+    static void call(VM vm, In x, In r, In y) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      
+      if(IntVarLike(x).isIntVarLike(vm) and isAtomToRelType(vm,r) and IntVarLike(y).isIntVarLike(vm)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	Gecode::rel(home,IntVarLike(x).intVar(vm),rt,IntVarLike(y).intVar(vm));
+      }else if(isIntVarArgs(vm,x) and isAtomToRelType(vm,r) and IntVarLike(y).isIntVarLike(vm)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	Gecode::rel(home,getIntVarArgs(vm,x),rt,IntVarLike(y).intVar(vm));
+      }else if(IntVarLike(x).isIntVarLike(vm) and isAtomToRelType(vm,r) and y.is<SmallInt>()){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	nativeint num = y.as<SmallInt>().value();
+	Gecode::rel(home,IntVarLike(x).intVar(vm),rt,(int)(num));
+      }else if(isIntVarArgs(vm,x) and isAtomToRelType(vm,r) and y.is<SmallInt>()){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	nativeint num = y.as<SmallInt>().value();
+	Gecode::rel(home,getIntVarArgs(vm,x),rt,(int)(num));
+      }else if(isIntVarArgs(vm,x) and isAtomToRelType(vm,r) and isIntVarArgs(vm,y)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	Gecode::rel(home,getIntVarArgs(vm,x),rt,getIntVarArgs(vm,y));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting rel malformed"), x);
+      }
+    }
+  };
+  
+  class Rel4: public Builtin<Rel4> {
+  public:
+    Rel4(): Builtin("rel4") {}
+
+    static void call(VM vm, In x, In r, In y, In b) {
+      assert(vm->getCurrentSpace()->hasConstraintSpace());
+      GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
+      
+      if(IntVarLike(x).isIntVarLike(vm) and isAtomToRelType(vm,r) and IntVarLike(y).isIntVarLike(vm) and BoolVarLike(b).isBoolVarLike(vm)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	Gecode::rel(home,IntVarLike(x).intVar(vm),rt,IntVarLike(y).intVar(vm),BoolVarLike(b).boolVar(vm));
+      }else if(IntVarLike(x).isIntVarLike(vm) and isAtomToRelType(vm,r) and y.is<SmallInt>() and BoolVarLike(b).isBoolVarLike(vm)){
+	Gecode::IntRelType rt = atomToRelType(vm,r);
+	nativeint num = y.as<SmallInt>().value();
+	Gecode::rel(home,IntVarLike(x).intVar(vm),rt,(int)(num),BoolVarLike(b).boolVar(vm));
+      }
+      else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting rel malformed"), x);
+      }
     }
   };
 
@@ -240,7 +298,12 @@ public:
     static void call(VM vm, In x) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::distinct(home,getIntVarArgs(vm,x));
+      
+      if(isIntVarArgs(vm,x)){
+	Gecode::distinct(home,getIntVarArgs(vm,x));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting distinct malformed"), x);
+      }
     }
   };
 
@@ -251,10 +314,15 @@ public:
     static void call(VM vm, In v, In x) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::distinct(home,getIntArgs(vm,v),getIntVarArgs(vm,x));
+      
+      if(isIntArgs(vm,v) and isIntVarArgs(vm,x)){
+	Gecode::distinct(home,getIntArgs(vm,v),getIntVarArgs(vm,x));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting distinct malformed"), x);
+      }
     }
   };
-
+  
   class Linear: public Builtin<Linear> {
   public:
     Linear(): Builtin("linear") {}
