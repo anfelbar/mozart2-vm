@@ -16,14 +16,19 @@ class ModIntVarProp: public Module {
 public:
   ModIntVarProp(): Module("IntVarProp") {}
 
-  class Min: public Builtin<Min> {
+  class Min3: public Builtin<Min3> {
   public:
-    Min(): Builtin("min") {}
+    Min3(): Builtin("min3") {}
 
     static void call(VM vm, In x0, In x1, In x2) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::min(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm)){
+	Gecode::min(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting min malformed"), x0);
+      }
     }
   };
 
@@ -34,18 +39,28 @@ public:
     static void call(VM vm, In x, In y) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::min(home,getIntVarArgs(vm,x),IntVarLike(y).intVar(vm));
+
+      if(isIntVarArgs(vm,x) and IntVarLike(y).isIntVarLike(vm)){
+	Gecode::min(home,getIntVarArgs(vm,x),IntVarLike(y).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting min malformed"), x);
+      }
     }
   };
 
-  class Max: public Builtin<Max> {
+  class Max3: public Builtin<Max3> {
   public:
-    Max(): Builtin("max") {}
+    Max3(): Builtin("max3") {}
     
     static void call(VM vm, In x0, In x1, In x2) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::max(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm)){
+	Gecode::max(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting max malformed"), x0);
+      }
     }
   };
   
@@ -56,10 +71,15 @@ public:
     static void call(VM vm, In x, In y) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::max(home,getIntVarArgs(vm,x),IntVarLike(y).intVar(vm));
+      
+      if(isIntVarArgs(vm,x) and IntVarLike(y).isIntVarLike(vm)){
+	Gecode::max(home,getIntVarArgs(vm,x),IntVarLike(y).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting max malformed"), x);
+      }
     }
   };
-
+  
   class Abs: public Builtin<Abs> {
   public:
     Abs(): Builtin("abs") {}
@@ -67,7 +87,12 @@ public:
     static void call(VM vm, In x0, In x1) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::abs(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm)){
+	Gecode::abs(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting abs malformed"), x0);
+      }
     }
   };
 
@@ -78,10 +103,15 @@ public:
     static void call(VM vm, In x0, In x1, In x2) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::mult(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm)){
+	Gecode::mult(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting mult malformed"), x0);
+      }
     }
   };
-
+  
   class Sqr: public Builtin<Sqr> {
   public:
     Sqr(): Builtin("sqr") {}
@@ -89,7 +119,12 @@ public:
     static void call(VM vm, In x0, In x1) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::sqr(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+     
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm)){
+	Gecode::sqr(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting sqr malformed"), x0);
+      }
     }
   };
 
@@ -100,7 +135,12 @@ public:
     static void call(VM vm, In x0, In x1) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::sqrt(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm)){
+	Gecode::sqrt(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting sqrt malformed"), x0);
+      }
     }
   };
   
@@ -111,8 +151,12 @@ public:
     static void call(VM vm, In x0, In x1, In x2, In x3) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::divmod(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm),IntVarLike(x3).intVar(vm));
-      home.status();
+      
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm) and IntVarLike(x3).isIntVarLike(vm)){
+	Gecode::divmod(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm),IntVarLike(x3).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting divmod malformed"), x0);
+      }
     }
   };
 
@@ -123,8 +167,12 @@ public:
     static void call(VM vm, In x0, In x1, In x2) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::div(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm), Gecode::ICL_BND);
-      home.status();
+     
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm)){
+	Gecode::div(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting div malformed"), x0);
+      }
     }
   };
 
@@ -135,8 +183,12 @@ public:
     static void call(VM vm, In x0, In x1, In x2) {
       assert(vm->getCurrentSpace()->hasConstraintSpace());
       GecodeSpace& home = vm->getCurrentSpace()->getCstSpace();
-      Gecode::mod(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
-      home.status();
+      
+      if(IntVarLike(x0).isIntVarLike(vm) and IntVarLike(x1).isIntVarLike(vm) and IntVarLike(x2).isIntVarLike(vm)){
+	Gecode::mod(home,IntVarLike(x0).intVar(vm),IntVarLike(x1).intVar(vm),IntVarLike(x2).intVar(vm));
+      }else{
+	raiseTypeError(vm, MOZART_STR("Propagator posting mod malformed"), x0);
+      }
     }
   };
 
